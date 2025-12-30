@@ -7,32 +7,59 @@ import { useState } from "react";
 
 export default function MainCard(){
 
-    const [formData, setFormData] = useState({
-        cement: '',
-        slag: '',
-        ash: '',
-        water: '',
-        superplasticizer: '',
-        coarseAggregate: '',
-        fineAggregate: '',
-        age: ''
-    });
+    // 1. État pour les données du formulaire
+  const [formData, setFormData] = useState({
+    cement: "",
+    slag: "",
+    fly_ash: "",
+    water: "",
+    superplasticizer: "",
+    coarse_aggregate: "",
+    fine_aggregate: "",
+    age: "",
+  });
 
-    function handleChange(e){
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value
-        }));
+  // 2. État pour le résultat et le chargement
+  const [prediction, setPrediction] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setPrediction(null);
+
+    try {
+      const response = await fetch("https://concrete-model-api.onrender.com/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cement: parseFloat(formData.cement),
+          slag: parseFloat(formData.slag),
+          fly_ash: parseFloat(formData.fly_ash),
+          water: parseFloat(formData.water),
+          superplasticizer: parseFloat(formData.superplasticizer),
+          coarse_aggregate: parseFloat(formData.coarse_aggregate),
+          fine_aggregate: parseFloat(formData.fine_aggregate),
+          age: parseFloat(formData.age),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Erreur lors de la prédiction");
+
+      const data = await response.json();
+      setPrediction(data.prediction);
+    } catch (err) {
+      setError("Impossible de contacter l'API. Vérifiez que le service Render est actif.");
+    } finally {
+      setIsLoading(false);
     }
-
-
-    async function handleSubmit(e){
-        e.preventDefault();
-        // Here you can handle form submission, e.g., send data to an API
-        console.log(formData);
-    }
-
+  };
 
     return (
         <div className={styles.mainCard}>
@@ -77,8 +104,8 @@ export default function MainCard(){
                         <input 
                         id="Ash"
                          type="number" 
-                         name="ash" 
-                         value={formData.ash}
+                         name="fly_ash" 
+                         value={formData.fly_ash}
                          onChange={(e)=>handleChange(e)}
                          placeholder="Ex: 0"
                          />
@@ -113,8 +140,8 @@ export default function MainCard(){
                         <input 
                         id="coarseAggregate" 
                         type="number"
-                        name="coarseAggregate"
-                        value={formData.coarseAggregate}
+                        name="coarse_aggregate"
+                        value={formData.coarse_aggregate}
                         onChange={(e)=>handleChange(e)}
                         placeholder="Ex: 1040"
                          />
@@ -125,8 +152,8 @@ export default function MainCard(){
                         <input 
                         id="fineAggregate" 
                         type="number"
-                        name="fineAggregate"
-                        value={formData.fineAggregate}
+                        name="fine_aggregate"
+                        value={formData.fine_aggregate}
                         onChange={(e)=>handleChange(e)}
                         placeholder="Ex: 676"
                          />
@@ -147,9 +174,23 @@ export default function MainCard(){
                    </div>
 
 
-                   <button type="submit">Predict Concrete Strength</button>
+                <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                 {isLoading ? "Calcul en cours..." : "Prédire la résistance"}
+               </button>
+            </form>
 
-                 </form>
+                {/* --- AJOUT DU RÉSULTAT CI-DESSOUS --- */}
+                {prediction !== null && (
+                  <div className={styles.resultContainer}>
+                    <h3 className={styles.resultTitle}>Résistance Prédite</h3>
+                    <div className={styles.resultBadge}>
+                      <span className={styles.resultValue}>{prediction.toFixed(2)}</span>
+                      <span className={styles.resultUnit}>MPa</span>
+                    </div>
+                  </div>
+                )}
+
+                {error && <p className={styles.errorMessage}>{error}</p>}
 
 
 

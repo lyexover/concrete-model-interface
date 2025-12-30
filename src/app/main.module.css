@@ -144,3 +144,61 @@
     margin-top: 0;
     font-size: 1.3rem;
 }
+
+
+/* --- AJOUTS POUR L'API CONCRETE --- */
+
+.resultContainer {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.resultTitle {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.resultBadge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  background: #ffffff;
+  padding: 10px 25px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.resultValue {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2d3436;
+}
+
+.resultUnit {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0984e3; /* Bleu pour un aspect technique */
+}
+
+.errorMessage {
+  margin-top: 1rem;
+  color: #d63031;
+  font-size: 0.85rem;
+  text-align: center;
+  background: #fff5f5;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
